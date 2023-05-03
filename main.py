@@ -23,7 +23,7 @@ blue3_speed = [random.randint(1, 5), 0]
 red1_speed = [random.randint(-5, -1), 0]
 red2_speed = [random.randint(-5, -1), 0]
 red3_speed = [random.randint(-5, -1), 0]
-boat1_speed = [random.randint(-3, -1), random.randint(-3, -1)]
+# boat1_speed = [random.randint(-3, -1), random.randint(-3, -1)]
 
 # 加载蓝色飞机
 blue = pyglet.image.load('fig/260_0000_蓝色飞机.png', decoder=PNGImageDecoder())
@@ -53,8 +53,9 @@ boat = pyglet.image.load('fig/舰艇.png', decoder=PNGImageDecoder())
 boat1 = pyglet.sprite.Sprite(boat, x=1200, y=600)
 boat1.scale = 0.1
 
-# 飞机的移动速度
-speed = 5
+# 飞机,舰船移动速度
+p_speed = 5
+b_speed = 3
 
 x, y = 0, 0
 
@@ -108,7 +109,7 @@ def move(plane, speed):
 
 
 def update(dt):
-    global x, y, blue2_speed, blue3_speed, red1_speed, red2_speed, red3_speed, boat1_speed
+    global x, y, p_speed, b_speed, blue2_speed, blue3_speed, red1_speed, red2_speed, red3_speed, boat1_speed
 
     # =========blue1移动===============
     # 计算blue1需要移动的距离和方向
@@ -122,7 +123,7 @@ def update(dt):
     # 调整blue1朝向角度
     blue1.rotation = 90 - angle
     # 将blue1的速度设置为移动方向的向量
-    blue1_speed = [direction_x * speed, direction_y * speed]
+    blue1_speed = [direction_x * p_speed, direction_y * p_speed]
     move(blue1, blue1_speed)
 
     # 飞机的移动
@@ -156,9 +157,22 @@ def update(dt):
     red3_speed = check_border(red3, red3_speed)
 
     # =========舰艇的移动===============
-    boat1.rotation = -15
+    # 舰艇以固定速度向台湾岛台北市(685，435)移动
+    dx = 685 - boat1.x
+    dy = 435 - boat1.y
+    distance = math.sqrt(dx ** 2 + dy ** 2)
+    direction_x = dx / distance
+    direction_y = dy / distance
+    # 将direction_x,direction_y转化成角度，正上方为0度，顺时针增加
+    angle = math.degrees(math.atan2(direction_y, direction_x))
+    # print(angle)
+    # 调整舰艇的朝向角度
+    boat1.rotation = 135 + angle
+    # 将舰艇的速度设置为移动方向的向量
+    boat1_speed = [direction_x * b_speed, direction_y * b_speed]
+    # 舰艇的移动
     move(boat1, boat1_speed)
-    # 飞机的边界检测
+    # 舰艇的边界检测
     boat1_speed = check_border(boat1, boat1_speed)
 
     on_draw()
