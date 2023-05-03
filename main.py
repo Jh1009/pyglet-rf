@@ -137,7 +137,7 @@ def update(dt):
     # 飞机的边界检测
     blue1_speed = check_border(blue3, blue3_speed)
 
-    # =========3架蓝色飞机的移动===============
+    # =========3架红色飞机的移动===============
     red1.rotation = -90
     move(red1, red1_speed)
     # 飞机的边界检测
