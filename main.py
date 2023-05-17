@@ -111,7 +111,10 @@ def on_draw():
     boat1.draw()
     boat1_radar.draw()
     # Draw the text box
-    text.draw()
+    if math.sqrt((blue1.x - boat1.x)**2 + (blue1.y - boat1.y)**2) < 100:
+        text.draw()
+        # Make blue1 and boat1 disappear after 5 seconds
+        pyglet.clock.schedule_once(pyglet.app.exit, 5)
 
 
 # 边界检测
