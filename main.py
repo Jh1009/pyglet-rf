@@ -30,8 +30,8 @@ red3_speed = [random.randint(-5, -1), 0]
 
 # 加载蓝色飞机
 blue = pyglet.image.load('fig/260_0000_蓝色飞机.png', decoder=PNGImageDecoder())
-# blue1从厦门港口出发
-blue1 = pyglet.sprite.Sprite(blue, x=1200, y=600)
+# blue1从东北海域出发
+blue1 = pyglet.sprite.Sprite(blue, x=1200, y=700)
 blue1.scale = 0.1
 # Create a black circle around blue1
 blue1_radar_radius = 100
@@ -56,6 +56,7 @@ red3.scale = 0.1
 
 # 加载舰艇
 boat = pyglet.image.load('fig/舰艇.png', decoder=PNGImageDecoder())
+# 舰艇从厦门港口出发
 boat1 = pyglet.sprite.Sprite(boat, x=307, y=370)
 boat1.scale = 0.1
 # Create a black circle around boat1
