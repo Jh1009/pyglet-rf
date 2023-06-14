@@ -76,7 +76,7 @@ b_speed = 3
 
 x, y = 0, 0
 
-text = Label('Mission Complete!',
+text = Label('Enemy Spotted!',
              font_name='Arial',
              font_size=36,
              color=(0, 0, 0, 255),
@@ -124,18 +124,21 @@ def on_draw():
     attack(blue2, blue2_radar, boat1)
 
 
+def finish():
+    pyglet.clock.schedule_once(pyglet.app.exit, 3)
+
+
 def attack(plane, plane_radar, boat):
     # Draw the text box
     # 判定飞机距离舰船范围在100以内时，舰艇进行攻击
-    if math.sqrt((plane.x - boat.x)**2 + (plane.y - boat.y)**2) < 100:
+    if math.sqrt((plane.x - boat.x) ** 2 + (plane.y - boat.y) ** 2) < 100:
         # print("舰艇攻击:", plane)
         text.draw()
-        # Make blue1 and boat1 disappear after 5 seconds
-        pyglet.clock.schedule_once(pyglet.app.exit, 5)
         plane.visible = False
         plane_radar.visible = False
-        # Remove the text from the screen after 5 seconds
-        pyglet.clock.schedule_once(lambda dt: text.delete(), 2)
+        pyglet.clock.schedule_once(lambda dt: text.delete(), 1)
+    if not blue1.visible and not blue2.visible:
+        finish()
 
 
 # 边界检测
