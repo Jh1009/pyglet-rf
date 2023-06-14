@@ -21,7 +21,7 @@ window = pyglet.window.Window(
 background = pyglet.image.load('fig/background2.png', decoder=PNGImageDecoder())
 bg = pyglet.sprite.Sprite(background, x=0, y=0)
 
-blue2_speed = [random.randint(1, 5), 0]
+# blue2_speed = [random.randint(1, 5), 0]
 blue3_speed = [random.randint(1, 5), 0]
 red1_speed = [random.randint(-5, -1), 0]
 red2_speed = [random.randint(-5, -1), 0]
@@ -38,7 +38,7 @@ blue1.scale = 0.1
 blue1_radar_radius = 100
 blue1_radar = Circle(blue1.x, blue1.y, blue1_radar_radius, color=(0, 0, 100, 100))
 
-blue2 = pyglet.sprite.Sprite(blue, x=10, y=700)
+blue2 = pyglet.sprite.Sprite(blue, x=1200, y=10)
 blue2.scale = 0.1
 # 飞机雷达范围为100
 blue2_radar_radius = 100
@@ -60,8 +60,10 @@ red3.scale = 0.1
 
 # 加载舰艇
 boat = pyglet.image.load('fig/舰艇.png', decoder=PNGImageDecoder())
-# 舰艇从厦门港口出发
-boat1 = pyglet.sprite.Sprite(boat, x=307, y=370)
+# 舰艇从厦门港口(307,370)出发
+# boat1 = pyglet.sprite.Sprite(boat, x=307, y=370)
+# 舰艇从厦门港口(390,410)出发
+boat1 = pyglet.sprite.Sprite(boat, x=390, y=410)
 boat1.scale = 0.1
 # Create a black circle around boat1
 # 舰艇雷达范围为150
@@ -118,20 +120,20 @@ def on_draw():
     boat1.draw()
     boat1_radar.draw()
     # 舰艇拦截判定
-    attack(blue1, boat1)
-    attack(blue2, boat1)
+    attack(blue1, blue1_radar, boat1)
+    attack(blue2, blue2_radar, boat1)
 
 
-def attack(plane, boat):
+def attack(plane, plane_radar, boat):
     # Draw the text box
     # 判定飞机距离舰船范围在100以内时，舰艇进行攻击
     if math.sqrt((plane.x - boat.x)**2 + (plane.y - boat.y)**2) < 100:
-        print("舰艇攻击")
+        # print("舰艇攻击:", plane)
         text.draw()
         # Make blue1 and boat1 disappear after 5 seconds
         pyglet.clock.schedule_once(pyglet.app.exit, 5)
-        blue1.visible = False
-        blue1_radar.visible = False
+        plane.visible = False
+        plane_radar.visible = False
         # Remove the text from the screen after 5 seconds
         pyglet.clock.schedule_once(lambda dt: text.delete(), 2)
 
@@ -155,6 +157,27 @@ def move(plane, speed):
     # 旋转的角度
     # plane.rotation += random.randint(-10,10)
     # print(blue1.x, blue1.y)
+
+
+def plane_move(des_x, des_y, plane, plane_radar):
+    dx = des_x - plane.x
+    dy = des_y - plane.y
+    distance = math.sqrt(dx ** 2 + dy ** 2)
+    direction_x = dx / distance
+    direction_y = dy / distance
+    # 将direction_x,direction_y转化成角度，正上方为0度，顺时针增加
+    angle = math.degrees(math.atan2(direction_y, direction_x))
+    # print(angle)
+    # 调整飞机的朝向角度
+    plane.rotation = 90 - angle
+    # 将飞机的速度设置为移动方向的向量
+    plane_speed = [direction_x * p_speed, direction_y * p_speed]
+    # 飞机的移动
+    move(plane, plane_speed)
+    # 飞机雷达的移动
+    move(plane_radar, plane_speed)
+    # 飞机的边界检测
+    # boat1_speed = check_border(boat1, boat1_speed)
 
 
 def update(dt):
@@ -210,24 +233,8 @@ def update(dt):
 
     # =========飞机的移动===============
     # 舰艇以固定速度向台湾岛台北市(685，435)移动
-    dx = 685 - blue1.x
-    dy = 435 - blue1.y
-    distance = math.sqrt(dx ** 2 + dy ** 2)
-    direction_x = dx / distance
-    direction_y = dy / distance
-    # 将direction_x,direction_y转化成角度，正上方为0度，顺时针增加
-    angle = math.degrees(math.atan2(direction_y, direction_x))
-    # print(angle)
-    # 调整飞机的朝向角度
-    blue1.rotation = 90 - angle
-    # 将飞机的速度设置为移动方向的向量
-    blue1_speed = [direction_x * p_speed, direction_y * p_speed]
-    # 飞机的移动
-    move(blue1, blue1_speed)
-    # 飞机雷达的移动
-    move(blue1_radar, blue1_speed)
-    # 飞机的边界检测
-    # boat1_speed = check_border(boat1, boat1_speed)
+    plane_move(685, 435, blue1, blue1_radar)
+    plane_move(685, 435, blue2, blue2_radar)
 
     on_draw()
 
