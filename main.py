@@ -34,11 +34,15 @@ blue = pyglet.image.load('fig/260_0000_蓝色飞机.png', decoder=PNGImageDecode
 blue1 = pyglet.sprite.Sprite(blue, x=1200, y=700)
 blue1.scale = 0.1
 # Create a black circle around blue1
+# 飞机雷达范围为100
 blue1_radar_radius = 100
 blue1_radar = Circle(blue1.x, blue1.y, blue1_radar_radius, color=(0, 0, 100, 100))
 
-blue2 = pyglet.sprite.Sprite(blue, x=260, y=440)
+blue2 = pyglet.sprite.Sprite(blue, x=10, y=700)
 blue2.scale = 0.1
+# 飞机雷达范围为100
+blue2_radar_radius = 100
+blue2_radar = Circle(blue2.x, blue2.y, blue2_radar_radius, color=(0, 0, 100, 100))
 
 blue3 = pyglet.sprite.Sprite(blue, x=260, y=480)
 blue3.scale = 0.1
@@ -60,6 +64,7 @@ boat = pyglet.image.load('fig/舰艇.png', decoder=PNGImageDecoder())
 boat1 = pyglet.sprite.Sprite(boat, x=307, y=370)
 boat1.scale = 0.1
 # Create a black circle around boat1
+# 舰艇雷达范围为150
 boat1_radar_radius = 150
 boat1_radar = Circle(boat1.x, boat1.y, boat1_radar_radius, color=(100, 0, 0, 100))
 
@@ -101,7 +106,9 @@ def on_draw():
     blue1.draw()
     # Draw the black circle around blue1
     blue1_radar.draw()
-    # blue2.draw()
+    # 绘制blue2飞机
+    blue2.draw()
+    blue2_radar.draw()
     # blue3.draw()
     # 绘制蓝色飞机
     # red1.draw()
@@ -110,11 +117,23 @@ def on_draw():
     # 加载舰艇
     boat1.draw()
     boat1_radar.draw()
+    # 舰艇拦截判定
+    attack(blue1, boat1)
+    attack(blue2, boat1)
+
+
+def attack(plane, boat):
     # Draw the text box
-    if math.sqrt((blue1.x - boat1.x)**2 + (blue1.y - boat1.y)**2) < 100:
+    # 判定飞机距离舰船范围在100以内时，舰艇进行攻击
+    if math.sqrt((plane.x - boat.x)**2 + (plane.y - boat.y)**2) < 100:
+        print("舰艇攻击")
         text.draw()
         # Make blue1 and boat1 disappear after 5 seconds
         pyglet.clock.schedule_once(pyglet.app.exit, 5)
+        blue1.visible = False
+        blue1_radar.visible = False
+        # Remove the text from the screen after 5 seconds
+        pyglet.clock.schedule_once(lambda dt: text.delete(), 2)
 
 
 # 边界检测
@@ -133,7 +152,6 @@ def move(plane, speed):
     # 飞机的位置
     plane.x += speed[0]
     plane.y += speed[1]
-    # print()
     # 旋转的角度
     # plane.rotation += random.randint(-10,10)
     # print(blue1.x, blue1.y)
@@ -154,17 +172,17 @@ def update(dt):
     angle = math.degrees(math.atan2(direction_y, direction_x))
     # 调整舰艇朝向角度
     boat1.rotation = - angle
-    print(boat1.rotation)
+    # print(boat1.rotation)
     # 将舰艇的速度设置为移动方向的向量
     boat1_speed = [direction_x * b_speed, direction_y * b_speed]
     move(boat1, boat1_speed)
     move(boat1_radar, boat1_speed)
 
-    # 飞机的移动
-    blue2.rotation = 90
-    move(blue2, blue2_speed)
-    # 飞机的边界检测
-    blue1_speed = check_border(blue2, blue2_speed)
+    # # 飞机的移动
+    # blue2.rotation = 90
+    # move(blue2, blue2_speed)
+    # # 飞机的边界检测
+    # blue1_speed = check_border(blue2, blue2_speed)
 
     # 飞机的移动
     blue3.rotation = 90
