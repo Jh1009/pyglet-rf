@@ -21,8 +21,6 @@ window = pyglet.window.Window(
 background = pyglet.image.load('fig/background2.png', decoder=PNGImageDecoder())
 bg = pyglet.sprite.Sprite(background, x=0, y=0)
 
-# blue2_speed = [random.randint(1, 5), 0]
-blue3_speed = [random.randint(1, 5), 0]
 red1_speed = [random.randint(-5, -1), 0]
 red2_speed = [random.randint(-5, -1), 0]
 red3_speed = [random.randint(-5, -1), 0]
@@ -30,22 +28,20 @@ red3_speed = [random.randint(-5, -1), 0]
 
 # 加载蓝色飞机
 blue = pyglet.image.load('fig/260_0000_蓝色飞机.png', decoder=PNGImageDecoder())
+# 飞机雷达范围为100
+plane_radar_radius = 100
 # blue1从东北海域出发
 blue1 = pyglet.sprite.Sprite(blue, x=1200, y=700)
 blue1.scale = 0.1
-# Create a black circle around blue1
-# 飞机雷达范围为100
-blue1_radar_radius = 100
-blue1_radar = Circle(blue1.x, blue1.y, blue1_radar_radius, color=(0, 0, 100, 100))
+blue1_radar = Circle(blue1.x, blue1.y, plane_radar_radius, color=(0, 0, 100, 100))
 
 blue2 = pyglet.sprite.Sprite(blue, x=1200, y=10)
 blue2.scale = 0.1
-# 飞机雷达范围为100
-blue2_radar_radius = 100
-blue2_radar = Circle(blue2.x, blue2.y, blue2_radar_radius, color=(0, 0, 100, 100))
+blue2_radar = Circle(blue2.x, blue2.y, plane_radar_radius, color=(0, 0, 100, 100))
 
-blue3 = pyglet.sprite.Sprite(blue, x=260, y=480)
+blue3 = pyglet.sprite.Sprite(blue, x=1250, y=5)
 blue3.scale = 0.1
+blue3_radar = Circle(blue3.x, blue3.y, plane_radar_radius, color=(0, 0, 100, 100))
 
 # 加载红色飞机
 red = pyglet.image.load('fig/260_0001_红色飞机.png', decoder=PNGImageDecoder())
@@ -76,12 +72,19 @@ b_speed = 3
 
 x, y = 0, 0
 
-text = Label('Enemy Spotted!',
-             font_name='Arial',
-             font_size=36,
-             color=(0, 0, 0, 255),
-             x=window.width // 2, y=window.height // 2,
-             anchor_x='center', anchor_y='center')
+text_spot = Label('Enemy Spotted!',
+                  font_name='Arial',
+                  font_size=36,
+                  color=(0, 0, 0, 255),
+                  x=window.width // 2, y=window.height // 2,
+                  anchor_x='center', anchor_y='center')
+
+text_fin = Label('Mission Complete!',
+                 font_name='Arial',
+                 font_size=36,
+                 color=(0, 0, 0, 255),
+                 x=window.width // 2, y=window.height // 2,
+                 anchor_x='center', anchor_y='center')
 
 
 # 给窗口绑定鼠标事件
@@ -106,13 +109,14 @@ def on_draw():
     bg.draw()
     # 绘制blue1飞机
     blue1.draw()
-    # Draw the black circle around blue1
     blue1_radar.draw()
     # 绘制blue2飞机
-    blue2.draw()
-    blue2_radar.draw()
+    # blue2.draw()
+    # blue2_radar.draw()
+    # 绘制blue3飞机
     # blue3.draw()
-    # 绘制蓝色飞机
+    # blue3_radar.draw()
+
     # red1.draw()
     # red2.draw()
     # red3.draw()
@@ -120,24 +124,29 @@ def on_draw():
     boat1.draw()
     boat1_radar.draw()
     # 舰艇拦截判定
+
     attack(blue1, blue1_radar, boat1)
-    attack(blue2, blue2_radar, boat1)
+    # attack(blue2, blue2_radar, boat1)
+    # attack(blue3, blue3_radar, boat1)
 
 
 def finish():
     pyglet.clock.schedule_once(pyglet.app.exit, 3)
 
 
-def attack(plane, plane_radar, boat):
+def attack(plane, plane_radar, red_boat):
     # Draw the text box
     # 判定飞机距离舰船范围在100以内时，舰艇进行攻击
-    if math.sqrt((plane.x - boat.x) ** 2 + (plane.y - boat.y) ** 2) < 100:
+    if math.sqrt((plane.x - red_boat.x) ** 2 + (plane.y - red_boat.y) ** 2) < 100:
         # print("舰艇攻击:", plane)
-        text.draw()
+        text_spot.draw()
         plane.visible = False
         plane_radar.visible = False
-        pyglet.clock.schedule_once(lambda dt: text.delete(), 1)
-    if not blue1.visible and not blue2.visible:
+        pyglet.clock.schedule_once(lambda dt: text_spot.delete(), 1)
+    # 1VN场景下，当所有飞机都被击落时，任务完成
+    if not blue1.visible and not blue2.visible and not blue3.visible:
+        print("++++++++")
+        text_fin.draw()
         finish()
 
 
@@ -184,7 +193,7 @@ def plane_move(des_x, des_y, plane, plane_radar):
 
 
 def update(dt):
-    global x, y, p_speed, b_speed, blue2_speed, blue3_speed, red1_speed, red2_speed, red3_speed
+    global x, y, p_speed, b_speed, red1_speed, red2_speed, red3_speed
 
     # =========舰艇移动===============
     # 计算舰艇需要移动的距离和方向
@@ -210,11 +219,11 @@ def update(dt):
     # # 飞机的边界检测
     # blue1_speed = check_border(blue2, blue2_speed)
 
-    # 飞机的移动
-    blue3.rotation = 90
-    move(blue3, blue3_speed)
-    # 飞机的边界检测
-    blue1_speed = check_border(blue3, blue3_speed)
+    # # 飞机的移动
+    # blue3.rotation = 90
+    # move(blue3, blue3_speed)
+    # # 飞机的边界检测
+    # blue1_speed = check_border(blue3, blue3_speed)
 
     # =========3架红色飞机的移动===============
     red1.rotation = -90
@@ -238,6 +247,7 @@ def update(dt):
     # 舰艇以固定速度向台湾岛台北市(685，435)移动
     plane_move(685, 435, blue1, blue1_radar)
     plane_move(685, 435, blue2, blue2_radar)
+    plane_move(685, 435, blue3, blue3_radar)
 
     on_draw()
 
