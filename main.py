@@ -107,15 +107,16 @@ def on_draw():
     pyglet.gl.glClearColor(255, 255, 255, 255)
     # 绘制背景
     bg.draw()
+
     # 绘制blue1飞机
     blue1.draw()
     blue1_radar.draw()
     # 绘制blue2飞机
-    # blue2.draw()
-    # blue2_radar.draw()
+    blue2.draw()
+    blue2_radar.draw()
     # 绘制blue3飞机
-    # blue3.draw()
-    # blue3_radar.draw()
+    blue3.draw()
+    blue3_radar.draw()
 
     # red1.draw()
     # red2.draw()
@@ -124,10 +125,9 @@ def on_draw():
     boat1.draw()
     boat1_radar.draw()
     # 舰艇拦截判定
-
     attack(blue1, blue1_radar, boat1)
-    # attack(blue2, blue2_radar, boat1)
-    # attack(blue3, blue3_radar, boat1)
+    attack(blue2, blue2_radar, boat1)
+    attack(blue3, blue3_radar, boat1)
 
 
 def finish():
@@ -135,7 +135,11 @@ def finish():
 
 
 def attack(plane, plane_radar, red_boat):
-    # Draw the text box
+    # 1VN场景下，当所有飞机都被击落时，任务完成
+    if not blue1.visible and not blue2.visible and not blue3.visible:
+        print("++++++++")
+        text_fin.draw()
+        finish()
     # 判定飞机距离舰船范围在100以内时，舰艇进行攻击
     if math.sqrt((plane.x - red_boat.x) ** 2 + (plane.y - red_boat.y) ** 2) < 100:
         # print("舰艇攻击:", plane)
@@ -143,11 +147,6 @@ def attack(plane, plane_radar, red_boat):
         plane.visible = False
         plane_radar.visible = False
         pyglet.clock.schedule_once(lambda dt: text_spot.delete(), 1)
-    # 1VN场景下，当所有飞机都被击落时，任务完成
-    if not blue1.visible and not blue2.visible and not blue3.visible:
-        print("++++++++")
-        text_fin.draw()
-        finish()
 
 
 # 边界检测
