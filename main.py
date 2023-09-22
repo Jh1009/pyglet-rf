@@ -10,12 +10,18 @@ from pyglet.text import Label
 win_width = 1280
 win_height = 720
 
+set_plane = input("请输入敌方飞机数目：")
+# 飞机,舰船移动速度
+p_speed = float(input("请输入飞机速度：（例如4.5）"))
+b_speed = float(input("请输入舰船速度：（例如3）"))
+
 window = pyglet.window.Window(
     win_width, win_height,
     resizable=False,  # Make sure it is not resizable
     caption="空战演示",  # Caption of window
     config=pyglet.gl.Config(double_buffer=True),  # Avoids flickers
     vsync=False)
+
 
 # 加载背景
 background = pyglet.image.load('fig/background2.png', decoder=PNGImageDecoder())
@@ -66,10 +72,6 @@ boat1.scale = 0.1
 boat1_radar_radius = 150
 boat1_radar = Circle(boat1.x, boat1.y, boat1_radar_radius, color=(100, 0, 0, 100))
 
-# 飞机,舰船移动速度
-p_speed = 4.5
-b_speed = 3
-
 x, y = 0, 0
 
 text_spot = Label('Enemy Spotted!',
@@ -108,15 +110,27 @@ def on_draw():
     # 绘制背景
     bg.draw()
 
-    # 绘制blue1飞机
-    blue1.draw()
-    blue1_radar.draw()
-    # 绘制blue2飞机
-    # blue2.draw()
-    # blue2_radar.draw()
-    # 绘制blue3飞机
-    # blue3.draw()
-    # blue3_radar.draw()
+    if set_plane == '2':
+        # 绘制blue1飞机
+        blue1.draw()
+        blue1_radar.draw()
+        # 绘制blue2飞机
+        blue2.draw()
+        blue2_radar.draw()
+    elif set_plane == '3':
+        # 绘制blue1飞机
+        blue1.draw()
+        blue1_radar.draw()
+        # 绘制blue2飞机
+        blue2.draw()
+        blue2_radar.draw()
+        # 绘制blue3飞机
+        blue3.draw()
+        blue3_radar.draw()
+    else:
+        # 绘制blue1飞机
+        blue1.draw()
+        blue1_radar.draw()
 
     # red1.draw()
     # red2.draw()
@@ -166,7 +180,7 @@ def move(plane, speed):
     plane.y += speed[1]
     # 旋转的角度
     # plane.rotation += random.randint(-10,10)
-    # print(blue1.x, blue1.y)
+    # print("飞机横坐标：", blue1.x, "飞机纵坐标：", blue1.y)
 
 
 def plane_move(des_x, des_y, plane, plane_radar):
